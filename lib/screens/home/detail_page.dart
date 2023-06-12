@@ -1,14 +1,21 @@
 // ignore_for_file: avoid_print, must_be_immutable
 
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project/provider/whishlist_provider.dart';
 import 'package:final_project/screens/chat/user_list_screen.dart';
+import 'package:final_project/screens/home/home.dart';
+import 'package:final_project/screens/home/mapscreen.dart';
 import 'package:final_project/widgets/widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
+
+
 
 class DetailPage extends StatefulWidget {
   DetailPage({
@@ -126,7 +133,19 @@ class _DetailPageState extends State<DetailPage> {
     }
     return !_isLiked;
   }
+ final Completer<GoogleMapController> _controller =
+      Completer<GoogleMapController>();
 
+  static const CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(37.42796133580664, -122.085749655962),
+    zoom: 14.4746,
+  );
+
+  static const CameraPosition _kLake = CameraPosition(
+      bearing: 192.8334901395799,
+      target: LatLng(37.43296265331129, -122.08832357078792),
+      tilt: 59.440717697143555,
+      zoom: 19.151926040649414);
   @override
   Widget build(BuildContext context) {
     final whishlistProvider = Provider.of<WhishlistProvider>(context);
@@ -490,6 +509,61 @@ class _DetailPageState extends State<DetailPage> {
                   ),
                 ),
               ]),
+            ),
+
+            GestureDetector(
+              onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: ((context) =>
+
+                           const mapscreen()
+                                ),
+                          ),
+                        );
+                      },
+
+              child: SingleChildScrollView(
+                child:
+                Container(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                  width: 800,
+                  height: 200,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.white,
+                      boxShadow: const [
+                        BoxShadow(
+                            color: Colors.black45,
+                            blurRadius: 5,
+                            offset: Offset(0, 3)),
+                        BoxShadow(color: Colors.white, offset: Offset(-5, 0)),
+                        BoxShadow(color: Colors.white, offset: Offset(5, 0))
+                      ]),
+                  child: Container(
+
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    child:
+                    // const
+                    // Image(image:AssetImage("assets/map.jpg"))
+                     GoogleMap(
+        mapType: MapType.hybrid,
+        initialCameraPosition: _kGooglePlex,
+         myLocationButtonEnabled: false,
+
+        onMapCreated: (GoogleMapController controller) {
+          _controller.complete(controller);
+
+        },
+      ),
+
+
+                  ),
+                ),
+              ),
             ),
             SingleChildScrollView(
               child: Container(
